@@ -1,0 +1,155 @@
+{extend name="layout/admin" /}
+
+{block name="title"}{if condition="$isEdit"}编辑商品{else /}新建商品{/if} · NOVA 管理后台{/block}
+{block name="crumb"}{if condition="$isEdit"}编辑商品{else /}新建商品{/if}{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>{if condition="$isEdit"}编辑商品。{else /}新建商品。{/if}</h1>
+        <p>{if condition="$isEdit"}更新商品信息后，前台会立即同步。{else /}填写商品信息，保存后即可在前台上架。{/if}</p>
+    </div>
+    <div class="page-heading-actions">
+        <a class="btn btn-ghost" href="/admin/products">← 返回列表</a>
+        {if condition="$isEdit"}
+        <a class="btn btn-ghost" href="/product/{$product.slug}" target="_blank" rel="noopener">前台预览 ↗</a>
+        {/if}
+    </div>
+</div>
+
+<form class="form-card" action="{$formAction}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="_token" value="{$csrfToken}">
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>基本信息</h2>
+            <p>商品名称与分类会显示在前台列表中</p>
+        </div>
+        <div class="form-grid">
+            <div class="field span-2">
+                <label for="name">商品名称 <span>必填</span></label>
+                <input id="name" type="text" name="name" value="{:form_value($old, 'name', $values['name'])}" required maxlength="120" placeholder="例如：Aero 头戴式降噪耳机">
+            </div>
+            <div class="field">
+                <label for="category_id">分类 <span>必填</span></label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">选择分类</option>
+                    {volist name="categories" id="cat"}
+                    <option value="{$cat.id}" {if condition="form_value($old, 'category_id', $values['category_id']) == $cat.id"}selected{/if}>{$cat.name}</option>
+                    {/volist}
+                </select>
+            </div>
+            <div class="field">
+                <label for="slug">URL 标识 <span>小写字母 / 数字 / 连字符</span></label>
+                <input id="slug" type="text" name="slug" value="{:form_value($old, 'slug', $values['slug'])}" maxlength="180" placeholder="留空自动生成">
+            </div>
+            <div class="field span-2">
+                <label for="subtitle">副标题</label>
+                <input id="subtitle" type="text" name="subtitle" value="{:form_value($old, 'subtitle', $values['subtitle'])}" maxlength="255" placeholder="一句话说明材质、卖点或使用场景">
+            </div>
+            <div class="field">
+                <label for="badge">商品标签 <span>选填</span></label>
+                <input id="badge" type="text" name="badge" value="{:form_value($old, 'badge', $values['badge'])}" maxlength="30" placeholder="例如：编辑推荐 / 新品">
+            </div>
+            <div class="field">
+                <label for="sort">排序权重 <span>数字越小越靠前</span></label>
+                <input id="sort" type="number" name="sort" value="{:form_value($old, 'sort', $values['sort'])}" min="0" max="99999">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>价格与库存</h2>
+            <p>售价以人民币计价，库存会在订单创建时扣减</p>
+        </div>
+        <div class="form-grid">
+            <div class="field">
+                <label for="price">售价 <span>必填</span></label>
+                <input id="price" type="number" name="price" value="{:form_value($old, 'price', $values['price'])}" required min="0.01" max="999999" step="0.01" placeholder="0.00">
+            </div>
+            <div class="field">
+                <label for="original_price">划线价 <span>选填</span></label>
+                <input id="original_price" type="number" name="original_price" value="{:form_value($old, 'original_price', $values['original_price'])}" min="0" max="999999" step="0.01" placeholder="需高于售价">
+            </div>
+            <div class="field">
+                <label for="stock">库存 <span>必填</span></label>
+                <input id="stock" type="number" name="stock" value="{:form_value($old, 'stock', $values['stock'])}" required min="0" max="999999">
+            </div>
+            <div class="field">
+                <label>上架状态</label>
+                <select name="status">
+                    <option value="1" {if condition="form_value($old, 'status', $values['status']) == 1"}selected{/if}>立即上架</option>
+                    <option value="0" {if condition="form_value($old, 'status', $values['status']) == 0"}selected{/if}>暂不上架</option>
+                </select>
+            </div>
+            <div class="field span-2">
+                <label class="check-row">
+                    <input type="checkbox" name="featured" value="1" {if condition="form_value($old, 'featured', $values['featured']) == 1"}checked{/if}>
+                    设为首页精选商品
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>商品图片</h2>
+            <p>建议使用正方形图片，上传 JPG / PNG / WebP，最大 2MB</p>
+        </div>
+        <div class="cover-preview">
+            <img src="{$values.cover|product_cover}" alt="当前商品图">
+            <div class="cover-hint">
+                当前图片：{$values.cover|default='使用占位图'}<br>
+                可保留现有图片，或上传新图覆盖。
+            </div>
+        </div>
+        <div class="form-grid" style="margin-top:14px;">
+            <div class="field">
+                <label for="cover_file">上传图片</label>
+                <input id="cover_file" type="file" name="cover_file" accept=".jpg,.jpeg,.png,.webp">
+            </div>
+            <div class="field">
+                <label for="cover">图片路径 / URL</label>
+                <input id="cover" type="text" name="cover" value="{:form_value($old, 'cover', $values['cover'])}" placeholder="/static/images/products/…">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>商品内容</h2>
+            <p>内容会显示在商品详情页，建议简洁、具体</p>
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+            <label for="description">商品详情</label>
+            <textarea id="description" name="description" rows="7" maxlength="8000" placeholder="介绍商品的设计、材质与使用感受…">{:form_value($old, 'description', $values['description'])}</textarea>
+        </div>
+        <div class="form-grid">
+            <div class="field">
+                <label for="highlights">卖点列表 <span>每行一条</span></label>
+                <textarea id="highlights" name="highlights" rows="5" placeholder="混合主动降噪&#10;38 小时续航&#10;可折叠收纳">{:form_value($old, 'highlights', $values['highlights'])}</textarea>
+            </div>
+            <div class="field">
+                <label for="specs">规格参数 <span>每行「名称：内容」</span></label>
+                <textarea id="specs" name="specs" rows="5" placeholder="材质：100% 亚麻&#10;尺寸：430 × 280mm&#10;产地：中国">{:form_value($old, 'specs', $values['specs'])}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn" type="submit">{if condition="$isEdit"}保存修改{else /}创建商品{/if}</button>
+        <a class="btn btn-ghost" href="/admin/products">取消</a>
+        <span class="spacer"></span>
+        {if condition="$isEdit"}
+        <button class="btn btn-danger" type="submit" form="delete-product" data-confirm="确定删除「{$product.name}」吗？历史订单中的商品快照会保留。">删除商品</button>
+        {/if}
+    </div>
+</form>
+
+{if condition="$isEdit"}
+<form id="delete-product" action="/admin/products/{$product.id}/delete" method="post">
+    <input type="hidden" name="_token" value="{$csrfToken}">
+</form>
+{/if}
+{/block}

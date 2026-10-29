@@ -1,0 +1,75 @@
+{extend name="layout/admin" /}
+
+{block name="title"}{if condition="$isEdit"}编辑分类{else /}新建分类{/if} · NOVA 管理后台{/block}
+{block name="crumb"}{if condition="$isEdit"}编辑分类{else /}新建分类{/if}{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>{if condition="$isEdit"}编辑分类。{else /}新建分类。{/if}</h1>
+        <p>分类会出现在前台导航、首页分类卡片与商品筛选侧栏。</p>
+    </div>
+    <div class="page-heading-actions">
+        <a class="btn btn-ghost" href="/admin/categories">← 返回列表</a>
+    </div>
+</div>
+
+<form class="form-card" action="{$formAction}" method="post">
+    <input type="hidden" name="_token" value="{$csrfToken}">
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>分类信息</h2>
+            <p>名称尽量简短，描述会显示在首页分类卡片上</p>
+        </div>
+        <div class="form-grid">
+            <div class="field">
+                <label for="name">分类名称 <span>必填</span></label>
+                <input id="name" type="text" name="name" value="{:form_value($old, 'name', $values['name'])}" required maxlength="60" placeholder="例如：咖啡器物">
+            </div>
+            <div class="field">
+                <label for="slug">URL 标识 <span>小写字母 / 数字 / 连字符</span></label>
+                <input id="slug" type="text" name="slug" value="{:form_value($old, 'slug', $values['slug'])}" maxlength="80" placeholder="例如：coffee">
+            </div>
+            <div class="field span-2">
+                <label for="description">一句话描述</label>
+                <input id="description" type="text" name="description" value="{:form_value($old, 'description', $values['description'])}" maxlength="255" placeholder="为一杯好咖啡，慢下来。">
+            </div>
+            <div class="field">
+                <label for="sort">排序权重</label>
+                <input id="sort" type="number" name="sort" value="{:form_value($old, 'sort', $values['sort'])}" min="0" max="99999">
+            </div>
+            <div class="field">
+                <label>状态</label>
+                <select name="status">
+                    <option value="1" {if condition="form_value($old, 'status', $values['status']) == 1"}selected{/if}>启用</option>
+                    <option value="0" {if condition="form_value($old, 'status', $values['status']) == 0"}selected{/if}>停用</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-head">
+            <h2>分类图片</h2>
+            <p>使用商品图片作为分类封面，建议正方形</p>
+        </div>
+        <div class="cover-preview">
+            <img src="{$values.cover|product_cover}" alt="分类封面">
+            <div class="cover-hint">
+                当前图片：{$values.cover|default='使用占位图'}<br>
+                可填写已有图片路径，例如 /static/images/products/lamp.svg。
+            </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+            <label for="cover">图片路径 / URL</label>
+            <input id="cover" type="text" name="cover" value="{:form_value($old, 'cover', $values['cover'])}" placeholder="/static/images/products/…">
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn" type="submit">{if condition="$isEdit"}保存修改{else /}创建分类{/if}</button>
+        <a class="btn btn-ghost" href="/admin/categories">取消</a>
+    </div>
+</form>
+{/block}

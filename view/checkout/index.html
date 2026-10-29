@@ -1,0 +1,128 @@
+{extend name="layout/store" /}
+
+{block name="title"}结算 · NOVA{/block}
+
+{block name="content"}
+<div class="page-section">
+    <div class="container">
+        <div class="page-title-row">
+            <div>
+                <div class="breadcrumb" style="margin-bottom:14px;">
+                    <a href="/">首页</a><span class="sep">/</span><a href="/cart">购物车</a><span class="sep">/</span><span>结算</span>
+                </div>
+                <h1>确认订单。</h1>
+            </div>
+            <div class="count-note">共 {$totals.quantity} 件商品 · 安全结算</div>
+        </div>
+
+        <form class="checkout-layout" action="/checkout" method="post">
+            <input type="hidden" name="_token" value="{$csrfToken}">
+
+            <div class="checkout-form">
+                <section class="checkout-section">
+                    <div class="checkout-section-head">
+                        <span class="step-num">1</span>
+                        <h2>收货信息</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="receiver">收货人</label>
+                            <input id="receiver" type="text" name="receiver" value="{:form_value($old, 'receiver', $prefill['receiver'])}" placeholder="请输入姓名" required maxlength="30" autocomplete="name">
+                        </div>
+                        <div class="field">
+                            <label for="phone">手机号</label>
+                            <input id="phone" type="tel" name="phone" value="{:form_value($old, 'phone', $prefill['phone'])}" placeholder="11 位手机号" required maxlength="11" autocomplete="tel">
+                        </div>
+                    </div>
+                    <div class="form-grid address-grid" style="margin-top:14px;">
+                        <div class="field">
+                            <label for="province">省份</label>
+                            <input id="province" type="text" name="province" value="{:form_value($old, 'province', $prefill['province'])}" placeholder="浙江省" required maxlength="30" autocomplete="address-level1">
+                        </div>
+                        <div class="field">
+                            <label for="city">城市</label>
+                            <input id="city" type="text" name="city" value="{:form_value($old, 'city', $prefill['city'])}" placeholder="杭州市" required maxlength="30" autocomplete="address-level2">
+                        </div>
+                        <div class="field">
+                            <label for="district">区 / 县</label>
+                            <input id="district" type="text" name="district" value="{:form_value($old, 'district', $prefill['district'])}" placeholder="西湖区" required maxlength="30" autocomplete="address-level3">
+                        </div>
+                    </div>
+                    <div class="form-grid" style="margin-top:14px;">
+                        <div class="field span-2">
+                            <label for="address">详细地址</label>
+                            <input id="address" type="text" name="address" value="{:form_value($old, 'address', $prefill['address'])}" placeholder="街道、门牌号、楼层与房间号" required maxlength="120" autocomplete="street-address">
+                            <div class="field-hint">请填写完整地址，配送员会据此联系你。</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="checkout-section">
+                    <div class="checkout-section-head">
+                        <span class="step-num">2</span>
+                        <h2>支付方式</h2>
+                    </div>
+                    <div class="payment-options">
+                        {volist name="payments" id="pay"}
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="{$key}" {if condition="form_value($old, 'payment_method', 'wechat') == $key"}checked{/if}>
+                            <span class="payment-dot"></span>
+                            <span class="payment-copy">
+                                <strong>{$pay.label}</strong>
+                                <span>{$pay.hint}</span>
+                            </span>
+                            <span style="font-size:10px;color:var(--muted);">{if condition="$key == 'wechat'"}微信{elseif condition="$key == 'alipay'"}支付宝{else /}COD{/if}</span>
+                        </label>
+                        {/volist}
+                    </div>
+                    <div class="field" style="margin-top:16px;">
+                        <label for="remark">订单备注 <span class="optional">选填</span></label>
+                        <textarea id="remark" name="remark" maxlength="200" placeholder="例如：工作日送达，或需要礼品包装">{:form_value($old, 'remark', '')}</textarea>
+                    </div>
+                </section>
+
+                <section class="checkout-section">
+                    <div class="checkout-section-head">
+                        <span class="step-num">3</span>
+                        <h2>确认与提交</h2>
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);line-height:1.8;">
+                        点击提交即表示你同意 NOVA 的服务条款。演示环境中的在线支付为模拟流程，不会产生真实扣款；你也可以选择货到付款。
+                    </p>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:10px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                        你的信息仅用于本次订单配送，我们不会将其用于其他用途。
+                    </div>
+                </section>
+            </div>
+
+            <aside class="checkout-summary">
+                <h2>订单摘要</h2>
+                <div class="checkout-items">
+                    {volist name="items" id="item"}
+                    <div class="checkout-item">
+                        <div class="ci-thumb">
+                            <img src="{$item.product.cover|product_cover}" alt="{$item.product.name}">
+                            <span class="ci-qty">{$item.quantity}</span>
+                        </div>
+                        <div class="ci-info">
+                            <strong>{$item.product.name}</strong>
+                            <span>{$item.product.price|money} / 件</span>
+                        </div>
+                        <span class="ci-price">{$item.subtotal|money}</span>
+                    </div>
+                    {/volist}
+                </div>
+                <div class="summary-row"><span>商品小计</span><strong>{$totals.subtotal|money}</strong></div>
+                <div class="summary-row"><span>运费</span><strong>{if condition="$totals.shipping > 0"}{$totals.shipping|money}{else /}免运费{/if}</strong></div>
+                <div class="summary-total">
+                    <span>应付合计</span>
+                    <strong>{$totals.total|money}</strong>
+                </div>
+                <button class="btn btn-primary btn-block" type="submit" style="margin-top:18px;">提交订单</button>
+                <p class="place-order-note">提交后可在「我的订单」查看进度<br><a href="/cart">返回购物车修改</a></p>
+            </aside>
+        </form>
+    </div>
+</div>
+{/block}

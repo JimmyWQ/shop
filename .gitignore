@@ -1,0 +1,15 @@
+*.log
+.env
+composer.phar
+.DS_Store
+Thumbs.db
+/.idea
+/.vscode
+/vendor
+/.settings
+/.buildpath
+/.project
+/database/*.sqlite
+/runtime/*
+/public/uploads/*
+!/public/uploads/.gitkeep

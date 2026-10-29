@@ -1,0 +1,81 @@
+{extend name="layout/admin" /}
+
+{block name="title"}分类管理 · NOVA 管理后台{/block}
+{block name="crumb"}分类管理{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>分类管理。</h1>
+        <p>共 {:count($categories)} 个分类 · 前台导航与商品筛选会实时同步。</p>
+    </div>
+    <div class="page-heading-actions">
+        <a class="btn" href="/admin/categories/create">+ 新建分类</a>
+    </div>
+</div>
+
+<div class="card">
+    {if condition="$categories->isEmpty()"}
+    <div class="empty">
+        <strong>还没有分类</strong>
+        <p>创建第一个分类，把商品整理得更有条理。</p>
+        <a class="btn btn-sm" href="/admin/categories/create">+ 新建分类</a>
+    </div>
+    {else /}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>分类</th>
+                    <th>URL 标识</th>
+                    <th>描述</th>
+                    <th>商品数</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {volist name="categories" id="cat"}
+                <tr>
+                    <td>
+                        <div class="table-product">
+                            <span class="table-thumb"><img src="{$cat.cover|product_cover}" alt="{$cat.name}"></span>
+                            <div>
+                                <strong>{$cat.name}</strong>
+                                <span>分类 #{$cat.id}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="muted">/{$cat.slug}</td>
+                    <td class="muted">{$cat.description|default='—'}</td>
+                    <td class="num">{$cat.product_count}</td>
+                    <td class="num">{$cat.sort}</td>
+                    <td>
+                        {if condition="$cat.status == 1"}
+                        <span class="badge badge-success">启用</span>
+                        {else /}
+                        <span class="badge badge-muted">停用</span>
+                        {/if}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="action-link" href="/admin/categories/{$cat.id}/edit">编辑</a>
+                            <form action="/admin/categories/{$cat.id}/toggle" method="post">
+                                <input type="hidden" name="_token" value="{$csrfToken}">
+                                <button class="action-link" type="submit">{if condition="$cat.status == 1"}停用{else /}启用{/if}</button>
+                            </form>
+                            <form action="/admin/categories/{$cat.id}/delete" method="post" data-confirm="确定删除分类「{$cat.name}」吗？只有分类下没有商品时才能删除。">
+                                <input type="hidden" name="_token" value="{$csrfToken}">
+                                <button class="action-link danger" type="submit">删除</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+    </div>
+    {/if}
+</div>
+{/block}

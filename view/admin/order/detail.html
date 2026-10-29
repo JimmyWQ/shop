@@ -1,0 +1,142 @@
+{extend name="layout/admin" /}
+
+{block name="title"}订单 {$order.order_no} · NOVA 管理后台{/block}
+{block name="crumb"}订单详情{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>订单详情。</h1>
+        <p>订单 {$order.order_no} · {:format_date($order['create_time'], 'Y.m.d H:i')} 创建</p>
+    </div>
+    <div class="page-heading-actions">
+        <a class="btn btn-ghost" href="/admin/orders">← 返回列表</a>
+        <span class="badge badge-{:order_status_tone($order['status'])}">{:order_status_label($order['status'])}</span>
+    </div>
+</div>
+
+<div class="admin-order-grid">
+    <div>
+        <div class="card">
+            <div class="card-head">
+                <div><h2>商品清单</h2><p>共 {$order.item_count} 件商品</p></div>
+                <span class="muted" style="font-size:9px;">{:payment_label($order['payment_method'])}</span>
+            </div>
+            {volist name="order.items" id="item"}
+            <div class="order-line">
+                <img src="{$item.product_cover|product_cover}" alt="{$item.product_name}">
+                <div class="ol-info">
+                    <strong>{$item.product_name}</strong>
+                    <span>{$item.price|money} × {$item.quantity}</span>
+                </div>
+                <div class="ol-price">{$item.subtotal|money}<span>小计</span></div>
+            </div>
+            {/volist}
+            <div class="total-lines">
+                <div class="total-line"><span>商品小计</span><strong>{$order.subtotal|money}</strong></div>
+                <div class="total-line"><span>运费</span><strong>{if condition="$order.shipping_fee > 0"}{$order.shipping_fee|money}{else /}免运费{/if}</strong></div>
+                <div class="total-line grand"><span>订单合计</span><strong>{$order.total_amount|money}</strong></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-head"><h2>收货与备注</h2></div>
+            <dl class="info-list">
+                <div class="info-row"><dt>收货人</dt><dd>{$order.receiver}</dd></div>
+                <div class="info-row"><dt>手机号</dt><dd>{$order.phone}</dd></div>
+                <div class="info-row"><dt>收货地址</dt><dd>{$order.address}</dd></div>
+                <div class="info-row"><dt>订单备注</dt><dd>{if condition="$order.remark"}{$order.remark}{else /}—{/if}</dd></div>
+            </dl>
+        </div>
+
+        <div class="card">
+            <div class="card-head"><h2>订单时间线</h2></div>
+            <div class="timeline-list">
+                <div class="tl-item done">
+                    <strong>订单创建</strong>
+                    {:format_date($order['create_time'], 'Y.m.d H:i')}
+                </div>
+                <div class="tl-item {if condition="$order.pay_time"}done{/if}">
+                    <strong>完成支付</strong>
+                    {if condition="$order.pay_time"}{:format_date($order['pay_time'], 'Y.m.d H:i')}{else /}未支付{/if}
+                </div>
+                <div class="tl-item {if condition="$order.ship_time"}done{/if}">
+                    <strong>商家发货</strong>
+                    {if condition="$order.ship_time"}{:format_date($order['ship_time'], 'Y.m.d H:i')}{else /}未发货{/if}
+                </div>
+                <div class="tl-item {if condition="$order.complete_time"}done{/if}">
+                    <strong>交易完成</strong>
+                    {if condition="$order.complete_time"}{:format_date($order['complete_time'], 'Y.m.d H:i')}{else /}未完成{/if}
+                </div>
+                {if condition="$order.cancel_time"}
+                <div class="tl-item done">
+                    <strong>订单取消</strong>
+                    {:format_date($order['cancel_time'], 'Y.m.d H:i')}
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-head"><h2>顾客信息</h2></div>
+            {if condition="$order.user"}
+            <div class="side-user" style="margin-bottom:14px;">
+                <span class="avatar">{$order.user.name|avatar_text}</span>
+                <div>
+                    <strong style="font-size:11px;display:block;">{$order.user.name}</strong>
+                    <span style="color:var(--a-muted);font-size:9px;">{$order.user.email}</span>
+                </div>
+            </div>
+            <dl class="info-list">
+                <div class="info-row"><dt>用户 ID</dt><dd>#{$order.user.id}</dd></div>
+                <div class="info-row"><dt>注册时间</dt><dd>{:format_date($order.user['create_time'], 'Y.m.d')}</dd></div>
+            </dl>
+            {else /}
+            <p class="muted" style="font-size:10px;">用户信息已删除。</p>
+            {/if}
+        </div>
+
+        <div class="card">
+            <div class="card-head"><h2>订单操作</h2></div>
+            <div class="action-panel">
+                {if condition="$order.status == 'pending' && $order.payment_method != 'cod'"}
+                <form action="/admin/orders/{$order.order_no}/action" method="post">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <input type="hidden" name="action" value="pay">
+                    <button class="btn btn-block" type="submit">确认收款（标记已支付）</button>
+                </form>
+                {/if}
+                {if condition="$order.status == 'paid'"}
+                <form action="/admin/orders/{$order.order_no}/action" method="post">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <input type="hidden" name="action" value="ship">
+                    <button class="btn btn-block" type="submit">标记为已发货</button>
+                </form>
+                {/if}
+                {if condition="$order.status == 'shipped'"}
+                <form action="/admin/orders/{$order.order_no}/action" method="post">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <input type="hidden" name="action" value="complete">
+                    <button class="btn btn-block" type="submit">标记订单完成</button>
+                </form>
+                {/if}
+                {if condition="$order.status == 'pending' || $order.status == 'paid'"}
+                <form action="/admin/orders/{$order.order_no}/action" method="post" data-confirm="确定取消这笔订单吗？库存会立即回补。">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <input type="hidden" name="action" value="cancel">
+                    <button class="btn btn-danger btn-block" type="submit">取消订单并回补库存</button>
+                </form>
+                {/if}
+                {if condition="!in_array($order['status'], ['pending', 'paid', 'shipped'])"}
+                <p class="muted" style="font-size:9px;text-align:center;padding:8px 0;">该订单已结束，没有可执行的操作。</p>
+                {/if}
+            </div>
+            <div class="action-note">
+                取消订单会回补商品库存；已发货订单不可取消。所有状态变更都会记录时间。
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

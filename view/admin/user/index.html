@@ -1,0 +1,102 @@
+{extend name="layout/admin" /}
+
+{block name="title"}用户管理 · NOVA 管理后台{/block}
+{block name="crumb"}用户管理{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>用户管理。</h1>
+        <p>共 {$totalUsers} 位注册客户 · 当前列出 {$users->total()} 个账号。</p>
+    </div>
+</div>
+
+<div class="card">
+    <form class="toolbar" action="/admin/users" method="get">
+        <label class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input type="search" name="q" value="{$keyword}" placeholder="搜索昵称、邮箱或手机号">
+        </label>
+        <select name="role">
+            <option value="all" {if condition="$role == 'all'"}selected{/if}>全部角色</option>
+            <option value="customer" {if condition="$role == 'customer'"}selected{/if}>客户</option>
+            <option value="admin" {if condition="$role == 'admin'"}selected{/if}>管理员</option>
+        </select>
+        <select name="status">
+            <option value="all" {if condition="$status == 'all'"}selected{/if}>全部状态</option>
+            <option value="1" {if condition="$status == '1'"}selected{/if}>正常</option>
+            <option value="0" {if condition="$status == '0'"}selected{/if}>已停用</option>
+        </select>
+        <button class="btn btn-ghost" type="submit">筛选</button>
+        {if condition="$keyword || $role != 'all' || $status != 'all'"}
+        <a class="btn btn-ghost" href="/admin/users">重置</a>
+        {/if}
+    </form>
+
+    {if condition="$users->isEmpty()"}
+    <div class="empty">
+        <strong>没有符合条件的用户</strong>
+        <p>调整搜索关键词或筛选条件。</p>
+    </div>
+    {else /}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>用户</th>
+                    <th>手机号</th>
+                    <th>角色</th>
+                    <th>订单数</th>
+                    <th>状态</th>
+                    <th>注册时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {volist name="users" id="u"}
+                <tr>
+                    <td>
+                        <div class="table-product" style="min-width:190px;">
+                            <span class="avatar" style="width:32px;height:32px;font-size:10px;background:#7d8c72;">{$u.name|avatar_text}</span>
+                            <div>
+                                <strong>{$u.name}</strong>
+                                <span>{$u.email}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="muted">{$u.phone|default='—'}</td>
+                    <td>
+                        {if condition="$u.role == 'admin'"}
+                        <span class="badge badge-accent">管理员</span>
+                        {else /}
+                        <span class="badge badge-info">客户</span>
+                        {/if}
+                    </td>
+                    <td class="num">{$u.order_count}</td>
+                    <td>
+                        {if condition="$u.status == 1"}
+                        <span class="badge badge-success">正常</span>
+                        {else /}
+                        <span class="badge badge-danger">已停用</span>
+                        {/if}
+                    </td>
+                    <td class="muted">{:format_date($u['create_time'], 'Y.m.d')}</td>
+                    <td>
+                        {if condition="$u.id != $adminUser.id && $u.role != 'admin'"}
+                        <form action="/admin/users/{$u.id}/toggle" method="post">
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <button class="action-link {if condition="$u.status == 1"}danger{/if}" type="submit">{if condition="$u.status == 1"}停用账号{else /}启用账号{/if}</button>
+                        </form>
+                        {else /}
+                        <span class="muted" style="font-size:9px;">—</span>
+                        {/if}
+                    </td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+    </div>
+    {$users->render()|raw}
+    {/if}
+</div>
+{/block}

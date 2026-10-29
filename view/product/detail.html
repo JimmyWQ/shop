@@ -1,0 +1,164 @@
+{extend name="layout/store" /}
+
+{block name="title"}{$product.name} · NOVA{/block}
+
+{block name="content"}
+<section class="product-detail">
+    <div class="container">
+        <div class="product-detail-grid">
+            <div class="product-gallery">
+                <div class="product-gallery-main">
+                    <img src="{$product.cover|product_cover}" alt="{$product.name}">
+                    {if condition="$product.badge"}<span class="gallery-badge">{$product.badge}</span>{/if}
+                    <span class="gallery-note">NOVA SELECT · 实拍图</span>
+                </div>
+                <div class="gallery-strip" aria-hidden="true">
+                    <div><img src="{$product.cover|product_cover}" alt="" style="object-position: 50% 18%; transform: scale(1.22);"></div>
+                    <div><img src="{$product.cover|product_cover}" alt="" style="object-position: 50% 50%; transform: scale(1.32);"></div>
+                    <div><img src="{$product.cover|product_cover}" alt="" style="object-position: 50% 82%; transform: scale(1.22);"></div>
+                </div>
+            </div>
+
+            <div class="product-panel">
+                <div class="breadcrumb">
+                    <a href="/">首页</a><span class="sep">/</span>
+                    <a href="/category/{$product.category.slug}">{$product.category.name}</a><span class="sep">/</span>
+                    <span>{$product.name}</span>
+                </div>
+
+                <span class="product-cat">{$product.category.name}</span>
+                <h1>{$product.name}</h1>
+                <p class="product-subtitle">{$product.subtitle}</p>
+
+                <div class="rating-row">
+                    <span class="stars">★★★★★</span>
+                    <span>4.9</span>
+                    <span>·</span>
+                    <span>{$product.sales} 人已入手</span>
+                </div>
+
+                <div class="detail-price">
+                    <strong>{$product.price|money}</strong>
+                    {if condition="$product.original_price > $product.price"}
+                    <del>{$product.original_price|money}</del>
+                    <span class="save-tag">省 {:money($saving)}</span>
+                    {/if}
+                </div>
+
+                <div class="product-desc">{$product.description}</div>
+
+                {if condition="$highlights"}
+                <ul class="highlight-list">
+                    {volist name="highlights" id="highlight"}
+                    <li>{$highlight}</li>
+                    {/volist}
+                </ul>
+                {/if}
+
+                {if condition="$specs"}
+                <details class="spec-details">
+                    <summary>规格与材质</summary>
+                    <dl class="spec-rows">
+                        {volist name="specs" id="spec"}
+                        <div><dt>{$spec.label}</dt><dd>{$spec.value}</dd></div>
+                        {/volist}
+                    </dl>
+                </details>
+                {/if}
+
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;font-size:11px;color:var(--muted);">
+                    <span>{if condition="$product.stock > 0"}现货 · 库存 {$product.stock} 件{else /}暂时缺货{/if}</span>
+                    <span>满 ¥299 免运费</span>
+                </div>
+
+                <form action="/cart/add" method="post">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <input type="hidden" name="product_id" value="{$product.id}">
+                    <div class="buy-row">
+                        <div class="qty-control">
+                            <button type="button" data-qty-step="-1" aria-label="减少数量">−</button>
+                            <input type="number" name="quantity" value="1" min="1" max="{$product.stock}" aria-label="购买数量" {if condition="$product.stock <= 0"}disabled{/if}>
+                            <button type="button" data-qty-step="1" aria-label="增加数量">+</button>
+                        </div>
+                        <button class="btn btn-ghost" type="submit" {if condition="$product.stock <= 0"}disabled{/if}>加入购物车</button>
+                        <button class="btn btn-primary" type="submit" name="next" value="checkout" {if condition="$product.stock <= 0"}disabled{/if}>立即购买</button>
+                    </div>
+                </form>
+
+                <div class="assurance">
+                    <div>
+                        <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
+                        48 小时内发出
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3M4 4v4h4"/></svg>
+                        30 天无忧退换
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5c0 5 3.2 8.2 7.5 10 4.3-1.8 7.5-5 7.5-10V6z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>
+                        正品保障
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-story">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">REAL WORDS</span>
+                    <h2 style="font-size:30px;margin-top:8px;">用过的人，这样说。</h2>
+                </div>
+                <span class="muted" style="font-size:11px;">来自真实订单的买家反馈</span>
+            </div>
+            <div class="review-grid">
+                <div class="review-card">
+                    <div class="review-top"><strong>林小满</strong><span class="stars">★★★★★</span></div>
+                    <p>“收到之后比图片更有质感。包装很克制，没有过度包装，但每个细节都照顾到了。”</p>
+                </div>
+                <div class="review-card">
+                    <div class="review-top"><strong>陈屿</strong><span class="stars">★★★★★</span></div>
+                    <p>“用了两周才来评价。日常使用频率很高，属于会一直留在手边的那种物件。”</p>
+                </div>
+                <div class="review-card">
+                    <div class="review-top"><strong>Mia</strong><span class="stars">★★★★☆</span></div>
+                    <p>“颜色和描述一致，发货也快。如果能多送一个收纳袋就更好了。”</p>
+                </div>
+            </div>
+        </div>
+
+        {if condition="$related"}
+        <div class="section" style="padding-bottom:0;">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">YOU MAY ALSO LIKE</span>
+                    <h2 style="font-size:34px;margin-top:8px;">也许你还会喜欢。</h2>
+                </div>
+                <a class="link-arrow" href="/category/{$product.category.slug}">更多{$product.category.name}</a>
+            </div>
+            <div class="product-grid">
+                {volist name="related" id="rp"}
+                <article class="product-card">
+                    <div class="product-media">
+                        <a href="/product/{$rp.slug}"><img src="{$rp.cover|product_cover}" alt="{$rp.name}" loading="lazy"></a>
+                        <form action="/cart/add" method="post" data-ajax-cart>
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <input type="hidden" name="product_id" value="{$rp.id}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button class="quick-add" type="submit" aria-label="将 {$rp.name} 加入购物车">
+                                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-cat">{$rp.category.name}</span>
+                        <h3><a href="/product/{$rp.slug}">{$rp.name}</a></h3>
+                        <div class="price-row"><span class="price">{$rp.price|money}</span></div>
+                    </div>
+                </article>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+    </div>
+</section>
+{/block}

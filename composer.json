@@ -1,0 +1,38 @@
+{
+    "name": "nova/mall",
+    "description": "NOVA 商城：基于 ThinkPHP 8 的精选好物电商网站",
+    "type": "project",
+    "keywords": [
+        "thinkphp",
+        "mall",
+        "shop",
+        "ecommerce"
+    ],
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "NOVA"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0",
+        "topthink/framework": "^8.0",
+        "topthink/think-orm": "^3.0|^4.0",
+        "topthink/think-filesystem": "^2.0|^3.0",
+        "topthink/think-view": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
+        ]
+    }
+}

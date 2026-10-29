@@ -1,0 +1,130 @@
+{extend name="layout/store" /}
+
+{block name="title"}购物车 · NOVA{/block}
+
+{block name="content"}
+<div class="page-section">
+    <div class="container">
+        <div class="page-title-row">
+            <div>
+                <div class="breadcrumb" style="margin-bottom:14px;"><a href="/">首页</a><span class="sep">/</span><span>购物车</span></div>
+                <h1>购物车。</h1>
+            </div>
+            <div class="count-note">{if condition="$items"}共 {$totals.quantity} 件商品 · 满 ¥299 免运费{else /}你的购物车还是空的{/if}</div>
+        </div>
+
+        {if condition="!$items"}
+        <div class="empty-state">
+            <span class="empty-mark">0</span>
+            <h3>购物车空空的</h3>
+            <p>去逛逛，把喜欢的物件放进来。它们会在这里等你准备好。</p>
+            <a class="btn btn-primary" href="/shop">去挑选好物</a>
+        </div>
+
+        {if condition="$recommended"}
+        <div class="section" style="padding-bottom:0;">
+            <div class="section-head">
+                <div><span class="eyebrow">POPULAR NOW</span><h2 style="font-size:30px;margin-top:8px;">大家都喜欢。</h2></div>
+                <a class="link-arrow" href="/shop">查看全部</a>
+            </div>
+            <div class="product-grid">
+                {volist name="recommended" id="p"}
+                <article class="product-card">
+                    <div class="product-media">
+                        <a href="/product/{$p.slug}"><img src="{$p.cover|product_cover}" alt="{$p.name}" loading="lazy"></a>
+                        <form action="/cart/add" method="post" data-ajax-cart>
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <input type="hidden" name="product_id" value="{$p.id}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button class="quick-add" type="submit" aria-label="将 {$p.name} 加入购物车"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+                        </form>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-cat">{$p.category.name}</span>
+                        <h3><a href="/product/{$p.slug}">{$p.name}</a></h3>
+                        <div class="price-row"><span class="price">{$p.price|money}</span></div>
+                    </div>
+                </article>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+        {else /}
+
+        <div class="cart-layout" data-cart-page>
+            <div>
+                <div class="cart-list">
+                    {volist name="items" id="item"}
+                    <div class="cart-item" data-cart-row>
+                        <a class="cart-thumb" href="/product/{$item.product.slug}">
+                            <img src="{$item.product.cover|product_cover}" alt="{$item.product.name}">
+                        </a>
+                        <div class="cart-item-info">
+                            <span class="product-cat">{$item.product.category.name|default='NOVA'}</span>
+                            <h3><a href="/product/{$item.product.slug}">{$item.product.name}</a></h3>
+                            <p class="cart-sub">{$item.product.subtitle}</p>
+                            <div class="unit-price">{$item.product.price|money}<span style="font-weight:400;color:var(--muted);font-size:10px;"> / 件</span></div>
+                            <div class="cart-item-actions">
+                                <form action="/cart/update" method="post" data-cart-update>
+                                    <input type="hidden" name="_token" value="{$csrfToken}">
+                                    <input type="hidden" name="product_id" value="{$item.product.id}">
+                                    <div class="qty-control">
+                                        <button type="button" data-qty-step="-1" aria-label="减少数量">−</button>
+                                        <input type="number" name="quantity" value="{$item.quantity}" min="1" max="{$item.product.stock}" aria-label="数量">
+                                        <button type="button" data-qty-step="1" aria-label="增加数量">+</button>
+                                    </div>
+                                </form>
+                                <form action="/cart/remove" method="post" data-cart-remove>
+                                    <input type="hidden" name="_token" value="{$csrfToken}">
+                                    <input type="hidden" name="product_id" value="{$item.product.id}">
+                                    <button class="cart-remove" type="submit">移除</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="cart-item-total">
+                            <strong class="js-line-total">{$item.subtotal|money}</strong>
+                            <span>{if condition="$item.quantity >= $item.product.stock"}已达库存上限{else /}现货{/if}</span>
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap;">
+                    <a class="link-arrow" href="/shop">← 继续购物</a>
+                    <form action="/cart/clear" method="post" data-confirm="确定清空购物车吗？">
+                        <input type="hidden" name="_token" value="{$csrfToken}">
+                        <button class="cart-remove" type="submit">清空购物车</button>
+                    </form>
+                </div>
+
+                <div class="cart-note">
+                    订单将在创建时锁定库存。部分商品库存有限，建议尽早结算。若商品价格或库存发生变化，结算页会为你重新确认。
+                </div>
+            </div>
+
+            <aside class="cart-summary">
+                <h2>订单小计</h2>
+                <div class="shipping-meter">
+                    <div class="meter-label">
+                        <span class="js-free-gap">{if condition="$totals.free_gap > 0"}再买 {$totals.free_gap|money} 即可免运费{else /}已享受免运费{/if}</span>
+                        <span>满 ¥299</span>
+                    </div>
+                    <div class="meter-bar"><span class="js-meter" style="width:{:min(100, round($totals['subtotal'] / 299 * 100))}%"></span></div>
+                </div>
+                <div style="margin-top:20px;">
+                    <div class="summary-row"><span>商品小计</span><strong class="js-subtotal">{$totals.subtotal|money}</strong></div>
+                    <div class="summary-row"><span>运费</span><strong class="js-shipping">{if condition="$totals.shipping > 0"}{$totals.shipping|money}{else /}免运费{/if}</strong></div>
+                    <div class="summary-row"><span>优惠</span><strong>—</strong></div>
+                </div>
+                <div class="summary-total">
+                    <span>合计</span>
+                    <strong class="js-total">{$totals.total|money}</strong>
+                </div>
+                <a class="btn btn-primary btn-block" href="/checkout">去结算</a>
+                <p class="summary-fine">支持微信、支付宝与货到付款<br>结算前可再次确认收货信息</p>
+            </aside>
+        </div>
+        {/if}
+    </div>
+</div>
+{/block}

@@ -1,0 +1,103 @@
+{
+  "_说明": "自选股用 sh/sz/bj 前缀；也可以直接写 600519。规则 ids 可随意命名，trigger 支持中文别名。",
+
+  "monitor": {
+    "interval": 60,
+    "timeout": 8,
+    "retries": 2
+  },
+
+  "watchlist": [
+    "sh600519",
+    "sz000001",
+    "sz300750",
+    "sh601318",
+    "sz002594"
+  ],
+
+  "rules": [
+    {
+      "id": "大跌3",
+      "trigger": "跌幅",
+      "threshold": 3,
+      "cooldown": 1800,
+      "note": "单日急跌，看看有没有消息面"
+    },
+    {
+      "id": "大涨5",
+      "trigger": "涨幅",
+      "threshold": 5,
+      "cooldown": 1800
+    },
+    {
+      "id": "茅台破1300",
+      "trigger": "跌破",
+      "symbols": ["sh600519"],
+      "threshold": 1300,
+      "cooldown": 3600
+    },
+    {
+      "id": "平安上12",
+      "trigger": "突破",
+      "symbols": ["sz000001"],
+      "threshold": 12.0,
+      "cooldown": 3600
+    },
+    {
+      "id": "放量",
+      "trigger": "量比",
+      "threshold": 2.0,
+      "cooldown": 3600,
+      "note": "量比超过2，可能是异动"
+    },
+    {
+      "id": "均线金叉",
+      "trigger": "均线交叉",
+      "fast": 5,
+      "slow": 20,
+      "direction": "cross_up",
+      "cooldown": 86400,
+      "note": "MA5上穿MA20"
+    },
+    {
+      "id": "均线死叉",
+      "trigger": "均线交叉",
+      "fast": 5,
+      "slow": 20,
+      "direction": "cross_down",
+      "cooldown": 86400,
+      "note": "MA5下穿MA20"
+    },
+    {
+      "id": "接近年内高点",
+      "trigger": "接近年内高点",
+      "threshold": 3,
+      "cooldown": 86400,
+      "note": "距52周高点3%以内"
+    }
+  ],
+
+  "notify": {
+    "desktop": {
+      "enabled": true,
+      "corner": "top-right",
+      "width": 340,
+      "height": 110,
+      "duration_ms": 6000,
+      "opacity": 0.95,
+      "sound": true,
+      "write_csv": true,
+      "csv_file": "alerts.csv",
+      "log_file": "monitor.log"
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      "retries": 2
+    }
+  }
+}

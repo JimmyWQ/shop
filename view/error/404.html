@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f6f2ea">
+    <title>页面没有找到 · NOVA</title>
+    <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/">NOVA<span class="brand-dot">.</span><small>SELECT SHOP</small></a>
+        <nav class="main-nav">
+            <a href="/shop">全部好物</a>
+            <a href="/about">关于 NOVA</a>
+            <a href="/service">配送与退换</a>
+        </nav>
+        <div class="header-actions">
+            <a class="icon-btn" href="/cart" aria-label="购物车">
+                <svg viewBox="0 0 24 24"><path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.7a2 2 0 0 0 2-1.6L20.5 8H7"/><circle cx="10" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="error-page">
+    <div>
+        <div class="error-code">404</div>
+        <h1>这件东西，好像不在这里。</h1>
+        <p>页面可能已经移动，或者链接写错了。回到商店，也许会遇到更合适的。</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+            <a class="btn btn-primary" href="/shop">去逛商店</a>
+            <a class="btn btn-ghost" href="/">返回首页</a>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-bottom" style="border:0;padding-top:0;">
+        <span>© {:date('Y')} NOVA SELECT SHOP</span>
+        <span>为日常挑一件好物</span>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{extend name="layout/store" /}
+
+{block name="title"}创建账号 · NOVA{/block}
+
+{block name="content"}
+<div class="auth-page">
+    <div class="auth-visual">
+        <span class="eyebrow" style="position:relative;z-index:2;">JOIN NOVA</span>
+        <div class="auth-collage" aria-hidden="true">
+            <div class="ac-img ac-one"><img src="/static/images/products/vase.svg" alt=""></div>
+            <div class="ac-img ac-two"><img src="/static/images/products/kettle.svg" alt=""></div>
+            <div class="ac-img ac-three"><img src="/static/images/products/serum.svg" alt=""></div>
+        </div>
+        <div class="auth-quote">
+            <h2>“买得少一点，<br>用得久一点。”</h2>
+            <p>加入 NOVA，领取首单免运费，并收到每周一次的好物手记。</p>
+        </div>
+    </div>
+
+    <div class="auth-panel">
+        <div class="auth-form-wrap">
+            <span class="eyebrow">CREATE ACCOUNT</span>
+            <h1>创建账号。</h1>
+            <p>只需要一分钟。你的购物车和结算进度会被保留。</p>
+
+            <form class="auth-form" action="/register" method="post">
+                <input type="hidden" name="_token" value="{$csrfToken}">
+                <div class="field">
+                    <label for="name">昵称</label>
+                    <input id="name" type="text" name="name" value="{:form_value($old, 'name', '')}" placeholder="怎么称呼你？" required minlength="2" maxlength="24" autocomplete="nickname">
+                </div>
+                <div class="field">
+                    <label for="email">邮箱</label>
+                    <input id="email" type="email" name="email" value="{:form_value($old, 'email', '')}" placeholder="you@example.com" required autocomplete="email">
+                </div>
+                <div class="field">
+                    <label for="phone">手机号 <span class="optional">选填</span></label>
+                    <input id="phone" type="tel" name="phone" value="{:form_value($old, 'phone', '')}" placeholder="用于接收配送通知" maxlength="11" autocomplete="tel">
+                </div>
+                <div class="field">
+                    <label for="password">密码</label>
+                    <input id="password" type="password" name="password" placeholder="至少 8 位，包含字母和数字" required minlength="8" autocomplete="new-password">
+                </div>
+                <div class="field">
+                    <label for="password_confirm">确认密码</label>
+                    <input id="password_confirm" type="password" name="password_confirm" placeholder="再次输入密码" required minlength="8" autocomplete="new-password">
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">创建账号</button>
+            </form>
+
+            <div class="auth-switch">已经有账号？<a href="/login">直接登录</a></div>
+        </div>
+    </div>
+</div>
+{/block}

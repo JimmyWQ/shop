@@ -1,0 +1,58 @@
+{extend name="layout/store" /}
+
+{block name="title"}联系我们 · NOVA{/block}
+
+{block name="content"}
+<div class="page-head">
+    <div class="container">
+        <div class="breadcrumb" style="margin-bottom:24px;"><a href="/">首页</a><span class="sep">/</span><span>联系我们</span></div>
+        <div class="page-head-row">
+            <div><h1>说说话，<br>我们都在。</h1></div>
+            <p>关于订单、商品或合作，都欢迎写信给我们。工作日通常会在一个工作日内回复。</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <section class="contact-grid">
+        <a class="contact-card" href="mailto:hello@nova.test">
+            <span class="contact-label">CUSTOMER CARE</span>
+            <h3>hello@nova.test</h3>
+            <p>订单、退换与商品咨询</p>
+            <span class="contact-arrow">写邮件 →</span>
+        </a>
+        <div class="contact-card">
+            <span class="contact-label">HOURS</span>
+            <h3>10:00 – 18:00</h3>
+            <p>周一至周五，节假日除外</p>
+            <span class="contact-note">非工作时间来信会在下一个工作日回复</span>
+        </div>
+        <a class="contact-card" href="mailto:partner@nova.test">
+            <span class="contact-label">PARTNERSHIP</span>
+            <h3>partner@nova.test</h3>
+            <p>品牌合作与选物推荐</p>
+            <span class="contact-arrow">聊聊合作 →</span>
+        </a>
+    </section>
+
+    <section class="section" style="padding-top:20px;">
+        <div class="info-split" style="min-height:0;">
+            <div class="info-split-copy">
+                <span class="eyebrow">BEFORE YOU WRITE</span>
+                <h2>写信前，也许这些能帮到你。</h2>
+                <p>订单相关问题，请附上订单号；商品问题，请附上照片与简要说明。信息越完整，我们处理得越快。</p>
+                <ul class="contact-list">
+                    <li><span>订单查询</span>登录后前往「我的订单」，可查看支付、发货与物流状态。</li>
+                    <li><span>退换申请</span>签收后 30 天内，保持商品完好即可申请。</li>
+                    <li><span>发票需求</span>在订单备注中留下抬头与税号，或来信补充。</li>
+                </ul>
+                <a class="link-arrow" href="/service" style="margin-top:24px;">查看完整服务说明 →</a>
+            </div>
+            <div class="info-split-visual" style="background:var(--paper-deep);">
+                <img src="/static/images/products/candle.svg" alt="NOVA 客服">
+                <span class="info-stamp">HELLO<br>@NOVA<br>2026</span>
+            </div>
+        </div>
+    </section>
+</div>
+{/block}

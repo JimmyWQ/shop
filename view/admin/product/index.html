@@ -1,0 +1,117 @@
+{extend name="layout/admin" /}
+
+{block name="title"}商品管理 · NOVA 管理后台{/block}
+{block name="crumb"}商品管理{/block}
+
+{block name="content"}
+<div class="page-heading">
+    <div>
+        <h1>商品管理。</h1>
+        <p>共 {$products->total()} 件商品 · 在售、库存与价格一目了然。</p>
+    </div>
+    <div class="page-heading-actions">
+        <a class="btn btn-ghost" href="/shop" target="_blank" rel="noopener">前台查看 ↗</a>
+        <a class="btn" href="/admin/products/create">+ 新建商品</a>
+    </div>
+</div>
+
+<div class="card">
+    <form class="toolbar" action="/admin/products" method="get">
+        <label class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input type="search" name="q" value="{$keyword}" placeholder="搜索商品名称或 URL 标识">
+        </label>
+        <select name="category_id">
+            <option value="0">全部分类</option>
+            {volist name="categories" id="cat"}
+            <option value="{$cat.id}" {if condition="$categoryId == $cat.id"}selected{/if}>{$cat.name}</option>
+            {/volist}
+        </select>
+        <select name="status">
+            <option value="all" {if condition="$status == 'all'"}selected{/if}>全部状态</option>
+            <option value="1" {if condition="$status == '1'"}selected{/if}>在售</option>
+            <option value="0" {if condition="$status == '0'"}selected{/if}>已下架</option>
+        </select>
+        <button class="btn btn-ghost" type="submit">筛选</button>
+        {if condition="$keyword || $categoryId || ($status != 'all')"}
+        <a class="btn btn-ghost" href="/admin/products">重置</a>
+        {/if}
+        <span class="toolbar-spacer"></span>
+        <span style="color:var(--a-muted);font-size:9px;">库存 ≤ 10 会显示预警</span>
+    </form>
+
+    {if condition="$products->isEmpty()"}
+    <div class="empty">
+        <strong>没有找到商品</strong>
+        <p>调整筛选条件，或创建第一件商品。</p>
+        <a class="btn btn-sm" href="/admin/products/create">+ 新建商品</a>
+    </div>
+    {else /}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>商品</th>
+                    <th>分类</th>
+                    <th>售价</th>
+                    <th>库存</th>
+                    <th>销量</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {volist name="products" id="p"}
+                <tr>
+                    <td>
+                        <div class="table-product">
+                            <span class="table-thumb"><img src="{$p.cover|product_cover}" alt="{$p.name}"></span>
+                            <div>
+                                <strong>{$p.name}</strong>
+                                <span>/{$p.slug}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{$p.category.name}</td>
+                    <td class="num">
+                        <strong>{$p.price|money}</strong>
+                        {if condition="$p.original_price > $p.price"}<span class="muted" style="display:block;font-size:8px;text-decoration:line-through;">{$p.original_price|money}</span>{/if}
+                    </td>
+                    <td class="num">
+                        {if condition="$p.stock <= 10"}
+                        <span style="color:var(--a-danger);font-weight:700;">{$p.stock}</span>
+                        {else /}
+                        {$p.stock}
+                        {/if}
+                    </td>
+                    <td class="num">{$p.sales}</td>
+                    <td>
+                        {if condition="$p.status == 1"}
+                        <span class="badge badge-success">在售</span>
+                        {else /}
+                        <span class="badge badge-muted">已下架</span>
+                        {/if}
+                        {if condition="$p.featured == 1"}<span class="badge badge-accent" style="margin-left:3px;">精选</span>{/if}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="action-link" href="/admin/products/{$p.id}/edit">编辑</a>
+                            <form action="/admin/products/{$p.id}/toggle" method="post">
+                                <input type="hidden" name="_token" value="{$csrfToken}">
+                                <button class="action-link" type="submit">{if condition="$p.status == 1"}下架{else /}上架{/if}</button>
+                            </form>
+                            <form action="/admin/products/{$p.id}/delete" method="post" data-confirm="确定删除「{$p.name}」吗？历史订单中的商品快照会保留。">
+                                <input type="hidden" name="_token" value="{$csrfToken}">
+                                <button class="action-link danger" type="submit">删除</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+    </div>
+    {$products->render()|raw}
+    {/if}
+</div>
+{/block}

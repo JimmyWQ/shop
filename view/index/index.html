@@ -1,0 +1,233 @@
+{extend name="layout/store" /}
+
+{block name="title"}NOVA · 为日常挑一件好物{/block}
+
+{block name="content"}
+<section class="hero-wrap">
+    <div class="container">
+        <div class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">NOVA EDIT · AUTUMN 2026</span>
+                <h1>把日常，<br>过成<em>喜欢</em>的样子。</h1>
+                <p>从一副耳机到一只杯子，我们挑选那些愿意陪你很久的物件。少一点将就，多一点刚刚好。</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="/shop">开始逛逛
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                    <a class="btn btn-ghost" href="/about">认识 NOVA</a>
+                </div>
+                <div class="hero-stats">
+                    <div><strong>48h</strong><span>现货快速发出</span></div>
+                    <div><strong>30天</strong><span>无忧退换</span></div>
+                    <div><strong>4.9</strong><span>用户平均评分</span></div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                {if condition="$heroMain"}
+                <a class="hero-main-card" href="/product/{$heroMain.slug}">
+                    <img src="{$heroMain.cover|product_cover}" alt="{$heroMain.name}" loading="eager">
+                </a>
+                {/if}
+                <div class="hero-badge">本周<br>精选<br>EDIT</div>
+                {if condition="$heroSideOne"}
+                <a class="hero-side-card" href="/product/{$heroSideOne.slug}">
+                    <img src="{$heroSideOne.cover|product_cover}" alt="{$heroSideOne.name}" loading="lazy">
+                    <div class="mini-meta">
+                        <span>{$heroSideOne.name}</span>
+                        <span>{$heroSideOne.price|money}</span>
+                    </div>
+                </a>
+                {/if}
+                {if condition="$heroSideTwo"}
+                <a class="hero-sticker" href="/product/{$heroSideTwo.slug}">
+                    <span class="sticker-num">Nº</span>
+                    <span>秋日新选 · 本周</span>
+                </a>
+                {/if}
+            </div>
+        </div>
+
+        <div class="ticker" aria-hidden="true">
+            <div class="ticker-track">
+                <span>独立设计</span><span>精选材质</span><span>日常美学</span><span>满 ¥299 包邮</span><span>30 天无忧退换</span><span>为生活留一点余白</span>
+                <span>独立设计</span><span>精选材质</span><span>日常美学</span><span>满 ¥299 包邮</span><span>30 天无忧退换</span><span>为生活留一点余白</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">BROWSE BY MOOD</span>
+                <h2>按心情，逛一逛。</h2>
+            </div>
+            <p>六个日常场景，六种生活提案。不必一次买齐，慢慢找到适合自己的那一件。</p>
+        </div>
+
+        <div class="category-grid">
+            {volist name="categories" id="cat"}
+            <a class="category-card" href="/category/{$cat.slug}">
+                <div class="category-copy">
+                    <span class="cat-index">{:str_pad($key + 1, 2, '0', STR_PAD_LEFT)}</span>
+                    <h3>{$cat.name}</h3>
+                    <p>{$cat.description}</p>
+                    <span class="cat-count">{$cat.product_count} 件好物 →</span>
+                </div>
+                <span class="category-thumb"><img src="{$cat.cover|product_cover}" alt="{$cat.name}" loading="lazy"></span>
+            </a>
+            {/volist}
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 10px;">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">CURATED FOR YOU</span>
+                <h2>本周精选。</h2>
+            </div>
+            <a class="link-arrow" href="/shop">查看全部
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+        </div>
+
+        <div class="product-grid">
+            {volist name="featured" id="p"}
+            <article class="product-card">
+                <div class="product-media">
+                    <a href="/product/{$p.slug}" aria-label="{$p.name}">
+                        <img src="{$p.cover|product_cover}" alt="{$p.name}" loading="lazy">
+                    </a>
+                    {if condition="$p.badge"}
+                    <span class="product-badge">{$p.badge}</span>
+                    {elseif condition="$p.original_price > $p.price" /}
+                    <span class="product-badge sale">限时价</span>
+                    {/if}
+                    <form action="/cart/add" method="post" data-ajax-cart>
+                        <input type="hidden" name="_token" value="{$csrfToken}">
+                        <input type="hidden" name="product_id" value="{$p.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button class="quick-add" type="submit" aria-label="将 {$p.name} 加入购物车">
+                            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                    </form>
+                </div>
+                <div class="product-info">
+                    <span class="product-cat">{$p.category.name}</span>
+                    <h3><a href="/product/{$p.slug}">{$p.name}</a></h3>
+                    <p class="product-sub">{$p.subtitle}</p>
+                    <div class="price-row">
+                        <span class="price">{$p.price|money}</span>
+                        {if condition="$p.original_price > $p.price"}
+                        <span class="price-original">{$p.original_price|money}</span>
+                        {/if}
+                    </div>
+                </div>
+            </article>
+            {/volist}
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        <div class="editorial">
+            <div class="editorial-copy">
+                <span class="eyebrow">NOVA JOURNAL · 01</span>
+                <h2>好的物件，<br>会陪你把日子<em>过慢</em>。</h2>
+                <p>我们偏爱那些不追赶潮流的品牌：一只手工吹制的玻璃杯，一盏能用十年的灯，一件越洗越柔软的亚麻衬衫。它们不急着被看见，却会在每一天里，悄悄让生活变好一点。</p>
+                <a class="btn btn-cream" href="/shop">发现更多好物</a>
+            </div>
+            <div class="editorial-visual">
+                <img src="/static/images/products/backpack.svg" alt="NOVA 生活方式" loading="lazy">
+                <div class="editorial-quote">“真正的质感，是使用它的时候，你几乎感觉不到设计的存在。”</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">JUST ARRIVED</span>
+                <h2>新到好物。</h2>
+            </div>
+            <p>每周限量上新，售完即止。所有商品均由 NOVA 团队实测后上架。</p>
+        </div>
+        <div class="product-grid">
+            {volist name="newProducts" id="np"}
+            <article class="product-card">
+                <div class="product-media">
+                    <a href="/product/{$np.slug}" aria-label="{$np.name}">
+                        <img src="{$np.cover|product_cover}" alt="{$np.name}" loading="lazy">
+                    </a>
+                    <span class="product-badge sale">NEW</span>
+                    <form action="/cart/add" method="post" data-ajax-cart>
+                        <input type="hidden" name="_token" value="{$csrfToken}">
+                        <input type="hidden" name="product_id" value="{$np.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button class="quick-add" type="submit" aria-label="将 {$np.name} 加入购物车">
+                            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                    </form>
+                </div>
+                <div class="product-info">
+                    <span class="product-cat">{$np.category.name}</span>
+                    <h3><a href="/product/{$np.slug}">{$np.name}</a></h3>
+                    <div class="price-row">
+                        <span class="price">{$np.price|money}</span>
+                        {if condition="$np.original_price > $np.price"}
+                        <span class="price-original">{$np.original_price|money}</span>
+                        {/if}
+                    </div>
+                </div>
+            </article>
+            {/volist}
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 12px;">
+    <div class="container">
+        <div class="values">
+            <div class="value-item">
+                <span class="value-num">01 / SELECT</span>
+                <h3>认真挑选，而不是大量上架</h3>
+                <p>每件商品都经过真实使用与对比。我们宁愿少一点选择，也不想让你在货架前犹豫太久。</p>
+            </div>
+            <div class="value-item">
+                <span class="value-num">02 / HONEST</span>
+                <h3>诚实描述，不制造焦虑</h3>
+                <p>材质、尺寸、使用感受都写在页面上。好与不够好，我们都愿意坦白告诉你。</p>
+            </div>
+            <div class="value-item">
+                <span class="value-num">03 / SLOW</span>
+                <h3>慢一点，也没关系</h3>
+                <p>不催促你下单，也不制造限时恐慌。好东西值得等，适合你的，才值得留下。</p>
+            </div>
+        </div>
+
+        <div class="newsletter">
+            <div>
+                <span class="eyebrow">A LITTLE NOTE</span>
+                <h2 style="margin-top: 12px;">加入 NOVA，<br>让好物先找到你。</h2>
+                <p>注册即可领取首单免运费，并收到每周一次的好物手记。</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                {if condition="$currentUser"}
+                <a class="btn" href="/account">回到我的账户</a>
+                <a class="btn btn-ghost" href="/shop">继续逛逛</a>
+                {else /}
+                <a class="btn" href="/register">创建账号</a>
+                <a class="btn btn-ghost" href="/login">已有账号，登录</a>
+                {/if}
+            </div>
+        </div>
+    </div>
+</section>
+{/block}

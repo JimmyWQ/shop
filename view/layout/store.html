@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{$csrfToken}">
+    <meta name="theme-color" content="#f6f2ea">
+    <title>{block name="title"}NOVA · 为日常挑一件好物{/block}</title>
+    <meta name="description" content="NOVA 精选设计好物：数码、家居、穿搭、咖啡、户外与香氛。把日常，过成喜欢的样子。">
+    <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="{block name='bodyclass'}{/block}">
+<div class="announcement">
+    <span>新会员首单免运费</span>
+    <span class="dot"></span>
+    <span class="hide-mobile">30 天无忧退换</span>
+    <span class="dot"></span>
+    <span>满 ¥299 包邮</span>
+</div>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/" aria-label="NOVA 首页">NOVA<span class="brand-dot">.</span><small>SELECT SHOP</small></a>
+
+        <nav class="main-nav" aria-label="主导航">
+            <a href="/shop" class="{if condition="$currentPath == '/shop'"}is-active{/if}">全部好物</a>
+            {volist name="navCategories" id="navCat" length="4"}
+            <a href="/category/{$navCat.slug}" class="{if condition="$currentPath == '/category/' . $navCat.slug"}is-active{/if}">{$navCat.name}</a>
+            {/volist}
+        </nav>
+
+        <div class="header-actions">
+            <button class="icon-btn" type="button" data-search-open aria-label="搜索">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            </button>
+            {if condition="$currentUser"}
+            <a class="user-chip" href="/account" title="{$currentUser.name}">
+                <span class="avatar">{$currentUser.name|avatar_text}</span>
+                <span>{$currentUser.name}</span>
+            </a>
+            {else /}
+            <a class="icon-btn" href="/login" aria-label="登录">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.8-4 3.5-6 7.2-6s6.4 2 7.2 6"/></svg>
+            </a>
+            {/if}
+            <a class="icon-btn" href="/cart" aria-label="购物车">
+                <svg viewBox="0 0 24 24"><path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.7a2 2 0 0 0 2-1.6L20.5 8H7"/><circle cx="10" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+                <span class="cart-count js-cart-count" {if condition="$cartCount <= 0"}style="display:none"{/if}>{$cartCount}</span>
+            </a>
+            <button class="icon-btn mobile-toggle" type="button" data-menu-open aria-label="打开菜单">
+                <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="search-layer" role="dialog" aria-modal="true" aria-label="搜索商品">
+    <div class="search-panel">
+        <div class="search-title">
+            <span>搜索好物</span>
+            <button class="icon-btn" type="button" data-search-close aria-label="关闭搜索">×</button>
+        </div>
+        <form class="search-form" action="/shop" method="get">
+            <input type="search" name="q" placeholder="试试「耳机」「台灯」「咖啡」…" autocomplete="off">
+            <button class="btn btn-primary" type="submit">搜索</button>
+        </form>
+        <div class="search-hints">
+            <span>热门：</span>
+            {volist name="navCategories" id="hintCat" length="4"}
+            <a href="/category/{$hintCat.slug}">{$hintCat.name}</a>
+            {/volist}
+        </div>
+    </div>
+</div>
+
+<div class="mobile-menu">
+    <button class="icon-btn mobile-close" type="button" data-menu-close aria-label="关闭菜单">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <a class="brand" href="/">NOVA<span class="brand-dot">.</span></a>
+    <nav class="mobile-nav">
+        <a href="/shop">全部好物 <span>SHOP ALL</span></a>
+        {volist name="navCategories" id="mobileCat"}
+        <a href="/category/{$mobileCat.slug}">{$mobileCat.name} <span>{$mobileCat.slug|strtoupper}</span></a>
+        {/volist}
+        <a href="/account/orders">我的订单 <span>ORDERS</span></a>
+    </nav>
+    <div class="mobile-actions">
+        {if condition="$currentUser"}
+        <a class="btn btn-ghost" href="/account">个人中心</a>
+        <form action="/logout" method="post">
+            <input type="hidden" name="_token" value="{$csrfToken}">
+            <button class="btn btn-primary btn-block" type="submit">退出登录</button>
+        </form>
+        {else /}
+        <a class="btn btn-ghost" href="/login">登录</a>
+        <a class="btn btn-primary" href="/register">注册</a>
+        {/if}
+    </div>
+</div>
+
+{if condition="$flash"}
+<div class="toast-stack">
+    <div class="toast toast-{$flash.type}">
+        <span class="toast-icon">{if condition="$flash.type == 'success'"}✓{else /}!{/if}</span>
+        <p>{$flash.message}</p>
+        <button class="toast-close" type="button" aria-label="关闭">×</button>
+    </div>
+</div>
+{/if}
+
+<main>
+    {block name="content"}{/block}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="brand" href="/">NOVA<span class="brand-dot">.</span></a>
+                <p>一间认真挑选日常好物的线上商店。我们相信，好的设计不必喧哗，它会在每一天里慢慢被看见。</p>
+                <div class="footer-social">
+                    <a href="mailto:hello@nova.test" aria-label="邮件">@</a>
+                    <a href="/about" aria-label="关于我们">N</a>
+                    <a href="/service" aria-label="服务说明">?</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>逛一逛</h4>
+                <a href="/shop">全部商品</a>
+                {volist name="navCategories" id="footCat"}
+                <a href="/category/{$footCat.slug}">{$footCat.name}</a>
+                {/volist}
+            </div>
+            <div class="footer-col">
+                <h4>账户</h4>
+                {if condition="$currentUser"}
+                <a href="/account">个人中心</a>
+                <a href="/account/orders">我的订单</a>
+                {else /}
+                <a href="/login">登录</a>
+                <a href="/register">创建账号</a>
+                {/if}
+                <a href="/cart">购物车</a>
+                <a href="/checkout">去结算</a>
+            </div>
+            <div class="footer-col">
+                <h4>服务</h4>
+                <a href="/about">关于 NOVA</a>
+                <a href="/service">配送与退换</a>
+                <a href="/contact">联系我们</a>
+                <p class="footer-note">客服时间：周一至周五 10:00–18:00<br>hello@nova.test</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© {:date('Y')} NOVA SELECT SHOP · 为日常挑一件好物</span>
+            <div class="pay-tags">
+                <span>微信支付</span>
+                <span>支付宝</span>
+                <span>货到付款</span>
+                <span>ThinkPHP 8</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<nav class="mobile-dock" aria-label="移动端导航">
+    <a href="/" class="{if condition="$currentPath == '/'"}is-active{/if}">
+        <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg>
+        <span>首页</span>
+    </a>
+    <a href="/shop" class="{if condition="$currentPath == '/shop' || str_starts_with($currentPath, '/category/')"}is-active{/if}">
+        <svg viewBox="0 0 24 24"><path d="M4 8h16l-1 12H5zM8 8V6a4 4 0 0 1 8 0v2"/></svg>
+        <span>商店</span>
+    </a>
+    <a href="/cart" class="dock-cart {if condition="$currentPath == '/cart'"}is-active{/if}">
+        <svg viewBox="0 0 24 24"><path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.7a2 2 0 0 0 2-1.6L20.5 8H7"/><circle cx="10" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+        <span>购物车</span>
+        <span class="cart-count js-cart-count" {if condition="$cartCount <= 0"}style="display:none"{/if}>{$cartCount}</span>
+    </a>
+    <a href="{if condition="$currentUser"}/account{else /}/login{/if}" class="{if condition="$currentPath == '/account' || $currentPath == '/login'"}is-active{/if}">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.8-4 3.5-6 7.2-6s6.4 2 7.2 6"/></svg>
+        <span>我的</span>
+    </a>
+</nav>
+
+<script src="/static/js/app.js" defer></script>
+{block name="scripts"}{/block}
+</body>
+</html>

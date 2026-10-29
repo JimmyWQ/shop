@@ -1,0 +1,91 @@
+{extend name="layout/store" /}
+
+{block name="title"}我的订单 · NOVA{/block}
+
+{block name="content"}
+<div class="container">
+    <div class="account-layout">
+        <aside class="account-sidebar">
+            <div class="account-user">
+                <span class="avatar">{$currentUser.name|avatar_text}</span>
+                <div>
+                    <strong>{$currentUser.name}</strong>
+                    <span>{$currentUser.email}</span>
+                </div>
+            </div>
+            <nav class="account-nav">
+                <a href="/account">概览 <span>OVERVIEW</span></a>
+                <a class="is-active" href="/account/orders">我的订单 <span class="nav-count">{$pendingTotal}</span></a>
+                <a href="/cart">购物车 <span class="nav-count">{$cartCount}</span></a>
+                {if condition="$currentUser.role == 'admin'"}
+                <a href="/admin">管理后台 <span>ADMIN</span></a>
+                {/if}
+                <form action="/logout" method="post">
+                    <input type="hidden" name="_token" value="{$csrfToken}">
+                    <button type="submit">退出登录 <span>LOGOUT</span></button>
+                </form>
+            </nav>
+        </aside>
+
+        <div class="account-content">
+            <div class="account-hero">
+                <div>
+                    <span class="eyebrow">ORDER HISTORY</span>
+                    <h1>我的订单。</h1>
+                    <p>每一件被认真挑选的物件，都在这里留下记录。</p>
+                </div>
+                <a class="btn btn-ghost btn-sm" href="/shop">继续逛逛</a>
+            </div>
+
+            <div class="order-tabs">
+                <a href="/account/orders" class="{if condition="$status == 'all'"}is-active{/if}">全部 <span>{$statusCounts.all}</span></a>
+                <a href="/account/orders?status=pending" class="{if condition="$status == 'pending'"}is-active{/if}">待付款 <span>{$statusCounts.pending}</span></a>
+                <a href="/account/orders?status=paid" class="{if condition="$status == 'paid'"}is-active{/if}">待发货 <span>{$statusCounts.paid}</span></a>
+                <a href="/account/orders?status=shipped" class="{if condition="$status == 'shipped'"}is-active{/if}">待收货 <span>{$statusCounts.shipped}</span></a>
+                <a href="/account/orders?status=completed" class="{if condition="$status == 'completed'"}is-active{/if}">已完成 <span>{$statusCounts.completed}</span></a>
+                <a href="/account/orders?status=cancelled" class="{if condition="$status == 'cancelled'"}is-active{/if}">已取消 <span>{$statusCounts.cancelled}</span></a>
+            </div>
+
+            {if condition="$orders->isEmpty()"}
+            <div class="empty-state">
+                <span class="empty-mark">0</span>
+                <h3>这里还没有订单</h3>
+                <p>去商店看看，也许有一件东西，正好适合现在的你。</p>
+                <a class="btn btn-primary" href="/shop">去挑选好物</a>
+            </div>
+            {else /}
+            {volist name="orders" id="o"}
+            <article class="order-card">
+                <div class="order-card-head">
+                    <div class="order-no">
+                        <strong>订单 {$o.order_no}</strong>
+                        <span>{:format_date($o['create_time'], 'Y.m.d H:i')}</span>
+                        <span>{:payment_label($o['payment_method'])}</span>
+                    </div>
+                    <span class="status-pill status-{:order_status_tone($o['status'])}">{:order_status_label($o['status'])}</span>
+                </div>
+                <div class="order-card-body">
+                    <div class="order-thumbs">
+                        {volist name="o.items" id="oi" length="4"}
+                        <span class="ot-thumb"><img src="{$oi.product_cover|product_cover}" alt="{$oi.product_name}"></span>
+                        {/volist}
+                    </div>
+                    <div class="order-summary">
+                        <span class="os-title">{$o.item_count} 件商品</span>
+                        <span class="os-meta">收货人 {$o.receiver} · {$o.phone}</span>
+                    </div>
+                    <div class="order-card-side">
+                        <span class="os-total">{$o.total_amount|money}</span>
+                        <div class="order-actions">
+                            <a class="btn btn-ghost btn-sm" href="/order/{$o.order_no}">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {/volist}
+            {$orders->render()|raw}
+            {/if}
+        </div>
+    </div>
+</div>
+{/block}

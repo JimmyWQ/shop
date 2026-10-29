@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{$csrfToken}">
+    <meta name="theme-color" content="#211f1b">
+    <meta name="robots" content="noindex,nofollow">
+    <title>管理后台登录 · NOVA</title>
+    <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+<div class="admin-login-page">
+    <div class="admin-login-art">
+        <div class="brand-line">
+            <div class="brand">NOVA<span>.</span></div>
+            <p>SELECT SHOP · 后台管理系统<br>为日常挑一件好物，也认真经营每一笔订单。</p>
+        </div>
+        <div class="art-quote">
+            “把喜欢的事，<br>做成可以持续的事。”
+            <span>NOVA OPERATIONS · EST. 2026</span>
+        </div>
+        <div class="art-shape" aria-hidden="true"></div>
+    </div>
+
+    <div class="admin-login-panel">
+        <div class="admin-login-form">
+            <div class="eyebrow">NOVA ADMIN</div>
+            <h1>管理员登录。</h1>
+            <p>请输入后台管理员账号，继续管理商品、订单与用户。</p>
+
+            <form action="/admin/login" method="post">
+                <input type="hidden" name="_token" value="{$csrfToken}">
+                <input type="hidden" name="next" value="{$next}">
+                <div class="field">
+                    <label for="email">管理员邮箱</label>
+                    <input id="email" type="email" name="email" value="{:form_value($old, 'email', '')}" placeholder="admin@nova.test" required autocomplete="username">
+                </div>
+                <div class="field">
+                    <label for="password">密码</label>
+                    <input id="password" type="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+                </div>
+                <button class="btn btn-block" type="submit">进入后台</button>
+            </form>
+
+            <div class="demo-box">
+                <strong>演示管理员</strong><br>
+                admin@nova.test / Admin@123
+            </div>
+            <a class="back-link" href="/">← 返回 NOVA 商店</a>
+        </div>
+    </div>
+</div>
+
+{if condition="$flash"}
+<div class="toast-stack">
+    <div class="toast toast-{$flash.type}">
+        <span class="toast-icon">{if condition="$flash.type == 'success'"}✓{else /}!{/if}</span>
+        <p>{$flash.message}</p>
+        <button class="toast-close" type="button" aria-label="关闭">×</button>
+    </div>
+</div>
+{/if}
+
+<script src="/static/js/app.js" defer></script>
+</body>
+</html>

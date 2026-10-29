@@ -1,0 +1,119 @@
+{extend name="layout/store" /}
+
+{block name="title"}{$pageTitle} · NOVA{/block}
+
+{block name="content"}
+<div class="page-head">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">首页</a><span class="sep">/</span>
+            {if condition="$category"}
+            <a href="/shop">全部好物</a><span class="sep">/</span>
+            <span>{$category.name}</span>
+            {else /}
+            <span>全部好物</span>
+            {/if}
+        </div>
+        <div class="page-head-row">
+            <div>
+                <h1>{$pageTitle}</h1>
+            </div>
+            <p>{if condition="$category"}{$category.description}{else /}认真挑选的日常好物。少一点选择，多一点确定。{/if}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="shop-layout">
+        <aside class="shop-sidebar">
+            <div class="sidebar-block">
+                <div class="sidebar-title">商品分类</div>
+                <div class="sidebar-list">
+                    <a href="/shop" class="{if condition="!$category"}is-active{/if}">全部好物 <span>{:array_sum($counts)}</span></a>
+                    {volist name="categories" id="cat"}
+                    <a href="/category/{$cat.slug}" class="{if condition="$category && $category.id == $cat.id"}is-active{/if}">
+                        {$cat.name} <span>{$cat.product_count}</span>
+                    </a>
+                    {/volist}
+                </div>
+            </div>
+            <div class="sidebar-block">
+                <div class="sidebar-title">价格</div>
+                <div class="sidebar-note">
+                    <strong>满 ¥299 免运费</strong>
+                    所有现货商品 48 小时内发出，支持 30 天无忧退换。
+                </div>
+            </div>
+        </aside>
+
+        <div class="shop-main">
+            <div class="shop-toolbar">
+                <div class="result-count">共 <strong>{$products->total()}</strong> 件商品</div>
+                <div class="toolbar-right">
+                    <div class="sort-pills">
+                        <a href="{$sortUrls.recommend}" class="{if condition="$sort == 'recommend'"}is-active{/if}">推荐</a>
+                        <a href="{$sortUrls.new}" class="{if condition="$sort == 'new'"}is-active{/if}">最新</a>
+                        <a href="{$sortUrls.sales}" class="{if condition="$sort == 'sales'"}is-active{/if}">热销</a>
+                        <a href="{$sortUrls.price_asc}" class="{if condition="$sort == 'price_asc'"}is-active{/if}">价格 ↑</a>
+                        <a href="{$sortUrls.price_desc}" class="{if condition="$sort == 'price_desc'"}is-active{/if}">价格 ↓</a>
+                    </div>
+                </div>
+            </div>
+
+            {if condition="$keyword !== ''"}
+            <div class="search-note">
+                <span>正在搜索「<strong>{$keyword}</strong>」，找到 {$products->total()} 件商品。</span>
+                <a href="{if condition="$category"}/category/{$category.slug}{else /}/shop{/if}">清除搜索</a>
+            </div>
+            {/if}
+
+            {if condition="$products->isEmpty()"}
+            <div class="empty-state">
+                <span class="empty-mark">?</span>
+                <h3>暂时没有找到合适的商品</h3>
+                <p>换一个关键词，或者去看看全部好物。也许下一件就是你正在找的。</p>
+                <a class="btn btn-ghost btn-sm" href="/shop">浏览全部</a>
+            </div>
+            {else /}
+            <div class="product-grid shop-grid">
+                {volist name="products" id="p"}
+                <article class="product-card">
+                    <div class="product-media">
+                        <a href="/product/{$p.slug}" aria-label="{$p.name}">
+                            <img src="{$p.cover|product_cover}" alt="{$p.name}" loading="lazy">
+                        </a>
+                        {if condition="$p.badge"}
+                        <span class="product-badge">{$p.badge}</span>
+                        {elseif condition="$p.original_price > $p.price" /}
+                        <span class="product-badge sale">限时价</span>
+                        {/if}
+                        <form action="/cart/add" method="post" data-ajax-cart>
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <input type="hidden" name="product_id" value="{$p.id}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button class="quick-add" type="submit" aria-label="将 {$p.name} 加入购物车">
+                                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-cat">{$p.category.name}</span>
+                        <h3><a href="/product/{$p.slug}">{$p.name}</a></h3>
+                        <p class="product-sub">{$p.subtitle}</p>
+                        <div class="price-row">
+                            <span class="price">{$p.price|money}</span>
+                            {if condition="$p.original_price > $p.price"}
+                            <span class="price-original">{$p.original_price|money}</span>
+                            {/if}
+                        </div>
+                    </div>
+                </article>
+                {/volist}
+            </div>
+
+            {$products->render()|raw}
+            {/if}
+        </div>
+    </div>
+</div>
+{/block}

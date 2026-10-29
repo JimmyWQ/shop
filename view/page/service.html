@@ -1,0 +1,78 @@
+{extend name="layout/store" /}
+
+{block name="title"}配送与退换 · NOVA{/block}
+
+{block name="content"}
+<div class="page-head">
+    <div class="container">
+        <div class="breadcrumb" style="margin-bottom:24px;"><a href="/">首页</a><span class="sep">/</span><span>配送与退换</span></div>
+        <div class="page-head-row">
+            <div><h1>买得安心，<br>用得放心。</h1></div>
+            <p>从下单到签收，再到售后的每一步，我们都希望简单、透明、可预期。</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <section class="service-grid">
+        <div class="service-card">
+            <span class="service-num">01</span>
+            <h3>配送说明</h3>
+            <p>现货商品在付款后 48 小时内发出，节假日顺延。默认使用顺丰或京东物流，偏远地区可能转邮政。</p>
+            <ul>
+                <li>单笔订单满 ¥299 免运费</li>
+                <li>未满 ¥299 收取 ¥15 运费</li>
+                <li>发货后可在订单详情查看物流状态</li>
+            </ul>
+        </div>
+        <div class="service-card">
+            <span class="service-num">02</span>
+            <h3>退换政策</h3>
+            <p>签收后 30 天内，商品保持完好、不影响二次销售，可申请无理由退换。</p>
+            <ul>
+                <li>定制商品与已拆封的个护用品不支持退换</li>
+                <li>质量问题由 NOVA 承担往返运费</li>
+                <li>非质量问题退货运费由买家承担</li>
+            </ul>
+        </div>
+        <div class="service-card">
+            <span class="service-num">03</span>
+            <h3>支付与发票</h3>
+            <p>支持微信支付、支付宝与货到付款。演示环境中的在线支付为模拟流程。</p>
+            <ul>
+                <li>订单支付成功后进入待发货状态</li>
+                <li>如需发票，请在订单备注中说明</li>
+                <li>退款会原路退回支付账户</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:20px;">
+        <div class="section-head">
+            <div><span class="eyebrow">FAQ</span><h2 style="font-size:34px;margin-top:8px;">常见问题。</h2></div>
+        </div>
+        <div class="faq-list">
+            <details class="faq-item" open>
+                <summary>下单后多久发货？</summary>
+                <div>现货商品通常在付款后 48 小时内发出。若遇节假日或预售商品，会在商品页与订单详情中另行说明。</div>
+            </details>
+            <details class="faq-item">
+                <summary>如何修改收货地址？</summary>
+                <div>订单发货前，请联系客服并提供订单号。发货后地址无法修改，建议联系物流改派。</div>
+            </details>
+            <details class="faq-item">
+                <summary>收到商品有问题怎么办？</summary>
+                <div>请在签收后 48 小时内拍摄商品与包装照片，发送至 hello@nova.test。核实后我们会安排换货或退款。</div>
+            </details>
+            <details class="faq-item">
+                <summary>可以开发票吗？</summary>
+                <div>可以。下单时在备注中填写抬头与税号，或联系客服补充。电子发票会在订单完成后 7 个工作日内发送。</div>
+            </details>
+            <details class="faq-item">
+                <summary>演示环境的支付是真的吗？</summary>
+                <div>不是。本项目为 ThinkPHP 8 商城演示，在线支付按钮只会把订单状态更新为已支付，不会产生真实扣款。</div>
+            </details>
+        </div>
+    </section>
+</div>
+{/block}
